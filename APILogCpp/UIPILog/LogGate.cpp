@@ -55,6 +55,7 @@ void LogGate::writeBytes(unsigned int level, string header, byte* buffer, int si
 	memset(ascii, '\0', 11);
 	for (i = 0; i < size; i++)
 	{
+		stringstream strHex;
 		if (j == 0)
 		{
 			int range = 0;
@@ -71,7 +72,9 @@ void LogGate::writeBytes(unsigned int level, string header, byte* buffer, int si
 		else
 			ascii[j] = '.';
 
-		out << hex << setw(2) << setfill('0') << (int)(0xff & buffer[i]) << dec;
+		strHex << setw(2) << setfill('0') << hex << (int) (buffer[i] & 0x00ff);
+		out << strHex.str();
+
 		j++;
 
 		if (j >= 10 || (i + 1) >= size)
