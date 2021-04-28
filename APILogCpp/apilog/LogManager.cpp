@@ -1,9 +1,27 @@
-#include "APILogCpp.h"
+#include "LogManager.h"
 
-#ifndef API_LOG_VERSION
-#define API_LOG_VERSION "API LOG CPP V1.0 (6 Octubre 2016)\n\tAuthor Jorge Oma Medra Torres\n\thttps://github.com/jorgemedra"
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+#include <cstring>
+#include <mutex>
+#include <fstream>
+#include <ctime>
+#include <iomanip>
+#include <functional>
+#include <sys/stat.h>
+
+#ifdef WIN32
+#define stat _stat
 #endif
 
+#ifndef API_LOG_VERSION
+#define API_LOG_VERSION "API LOG CPP V2.0 (27 Abril 2021)\n\tAuthor: Jorge Omar Medra Torres\n\thttps://github.com/jorgemedra"
+#endif
+
+using namespace apilog;
 
 LogManager* LogManager::getLogManger()
 {
@@ -15,11 +33,17 @@ LogManager::LogManager()
 {
 	bInitLog = LOG_STATE::NO_INIT;
 	currentIndex = 1;
+	bRun = true;
 }
 
 LogManager::~LogManager()
-{
-
+{	
+	if(bRun)
+	{	
+		bRun = false;
+		tQueue->join();
+	}
+	cout << "\nLogManager has been destroyed\n";
 }
 
 
@@ -43,6 +67,8 @@ bool LogManager::initLog(string name, string path, int filesBackup, int fileSize
 	LOG_MASK = 0x0000;
 	bInitLog = LOG_STATE::APP_START;
 
+	tQueue = std::make_unique<thread>(bind(&LogManager::_queueProccess, this));
+
 	return true;
 }
 
@@ -61,14 +87,12 @@ unsigned int LogManager::getLogLevel()
 	return LOG_MASK;
 }
 
-void LogManager::writeToLog(string message)
+void LogManager::_writeToLog(string message)
 {
-
-	mtx_log.lock();
+	//unique_lock<mutex> lckLog(mtx_log);
 	static bool started = false;
 
 	fstream f;
-	long size = 0;
 	bool isNew = false;
 	bool closeIt = false;
 	
@@ -131,8 +155,6 @@ void LogManager::writeToLog(string message)
 		f << message;
 		f.close();
 	}
-
-	mtx_log.unlock();
 }
 
 int LogManager::findCurrentIndex(string path, bool*closeCurrent)
@@ -186,10 +208,10 @@ int LogManager::findCurrentIndex(string path, bool*closeCurrent)
 
 bool LogManager::existFile(string path)
 {
-	struct _stat attributos;
+	struct stat attributos;
 	int rstat;
 
-	rstat = _stat(path.c_str(), &attributos);
+	rstat = stat(path.c_str(), &attributos);
 
 	if (rstat == 0)
 		return true;
@@ -256,7 +278,42 @@ int LogManager::getIndexOfFile(string path)
 	return index;
 }
 
+void LogManager::_queueProccess()
+{
+	unique_lock<mutex> lckProc(mtx_log);
 
+	while(bRun)
+	{
+		if(_empty())
+			cvLog.wait(lckProc);
 
+		while(!_empty())
+			_writeToLog(_dequeue());
+	}
+}
 
+void LogManager::writeToLog(string message)
+{
+	_enqueue(message);
+	cvLog.notify_all();
+}
 
+bool LogManager::_empty()
+{
+	unique_lock<mutex> lckQ(mtx_queue);
+	return qLog.empty();
+}
+
+void LogManager::_enqueue(string message)
+{
+	unique_lock<mutex> lckQ(mtx_queue);
+	qLog.push(message);
+}
+
+string LogManager::_dequeue()
+{
+	unique_lock<mutex> lckQ(mtx_queue);
+	string out = qLog.front();
+	qLog.pop();
+	return out;
+}

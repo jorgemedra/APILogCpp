@@ -1,4 +1,28 @@
-#include "APILogCpp.h"
+//#include "APILogCpp.h"
+#include "LogGate.h"
+
+using namespace apilog;
+
+string apilog::logLevelKey(unsigned int level)
+{
+		
+		if(level == LOG_LEVEL::INFO)
+			return "INFO";
+		else if(level == LOG_LEVEL::WARNING)
+			return "WARN";
+		else if(level == LOG_LEVEL::ERROR)
+			return "ERROR";
+		else if(level == (LOG_LEVEL::DEBUG_ON | LOG_LEVEL::DEBUG_LVL_1))
+			return "DBG_1";
+		else if(level == (LOG_LEVEL::DEBUG_ON | LOG_LEVEL::DEBUG_LVL_2))
+			return "DBG_2";
+		else if(level == (LOG_LEVEL::DEBUG_ON | LOG_LEVEL::DEBUG_LVL_3))
+			return "DBG_3";
+		else if(level == (LOG_LEVEL::DEBUG_ON | LOG_LEVEL::DEBUG_LVL_4))
+			return "DBG_4";
+
+	return ".....";
+}
 
 LogGate::LogGate(string id)
 {
@@ -17,35 +41,42 @@ string LogGate::getID()
 
 void LogGate::writeInfo(string message)
 {
-	writeLog("INFO", message);
+	if (isLogLevelActive(LOG_LEVEL::INFO))
+		writeLog(logLevelKey(LOG_LEVEL::INFO), message);
 }
 
 void LogGate::writeWarn(string message)
 {
-	writeLog("WARN", message);
+	if (isLogLevelActive(LOG_LEVEL::WARNING))
+		writeLog(logLevelKey(LOG_LEVEL::WARNING), message);
 }
 
 void LogGate::writeError(string message)
 {
-	writeLog("ERROR", message);
+	if (isLogLevelActive(LOG_LEVEL::ERROR))
+		writeLog(logLevelKey(LOG_LEVEL::ERROR), message);
 }
 
-void LogGate::writeDebug(unsigned int level, string message)
+void LogGate::writeDebug(LOG_LEVEL level, string message)
 {
-	if (isDebugLevelActive(level))
-		writeLog("DEBUG", message);
+	if (isLogLevelActive( LOG_LEVEL::DEBUG_ON | level))
+	{
+		string type = logLevelKey( LOG_LEVEL::DEBUG_ON | level);
+		writeLog(type, message);
+	}
 }
-
-void LogGate::writeBytes(unsigned int level, string header, byte* buffer, int size)
+			  
+void LogGate::writeBytes(LOG_LEVEL level, string header, char* buffer, int size)
 {
+	unique_lock<mutex> wbLck(mutex_buff);
+
 	stringstream out;
 	char ascii[11];
 	int i, j;
 
-	if (!isDebugLevelActive(level))
+	if (!isLogLevelActive( LOG_LEVEL::DEBUG_ON | level))
 		return;
-
-	mutex_buff.lock();
+	
 
 	out << header << endl;
 	out << "Buffer: Size = " << size  << endl;
@@ -100,9 +131,8 @@ void LogGate::writeBytes(unsigned int level, string header, byte* buffer, int si
 	}
 
 	//out << "--- DATA END --- " << endl;
-	mutex_buff.unlock();
-
-	writeLog("DEBUG", out.str());
+	string type = logLevelKey( LOG_LEVEL::DEBUG_ON | level);
+	writeLog(type, out.str());
 }
 
 void LogGate::setLogLevel(unsigned int level)
@@ -110,11 +140,10 @@ void LogGate::setLogLevel(unsigned int level)
 	LogManager::getLogManger()->setLogLevel(level);
 }
 
-bool LogGate::isDebugLevelActive(unsigned int level)
+bool LogGate::isLogLevelActive(unsigned int level)
 {
 	unsigned int lvl = LogManager::getLogManger()->getLogLevel();
 
-	int l = level & lvl;
 	if ((level & lvl) == level)
 		return true;
 	return false;
@@ -122,37 +151,54 @@ bool LogGate::isDebugLevelActive(unsigned int level)
 
 string LogGate::getDateTimeFormated()
 {
-	string format = LogManager::getLogManger()->getDateFormat();
-	stringstream out;
-	SYSTEMTIME st;
-	time_t rawtime;
-	struct tm * timeinfo;
-	char buffer[128];
+	std::stringstream out;
 	bool bMicroSeconds = false;
-	
+	string format = LogManager::getLogManger()->getDateFormat();
+    time_t rawtime;
+	struct tm * timeinfo;
+    char buffer[128];
+    
+
 	if (format.find("@s") >= 0)
 	{
 		bMicroSeconds = true;
 		format.erase(format.find("@s"), 2);
 	}
 
-	GetSystemTime(&st);
-
-	time(&rawtime);
+    time(&rawtime);
 	timeinfo = localtime(&rawtime);
-	strftime(buffer, 80, format.c_str(), timeinfo);
 
-	out << buffer;
+	strftime(buffer, 80, format.c_str(), timeinfo);    
+    std::string dt2(buffer);
+	out << dt2;
+
+
 	if (bMicroSeconds)
-		out << std::setw(3) << std::setfill('0') << st.wMilliseconds;
+	{
+		//Get the system clock fot NOW
+    	chrono::system_clock::time_point today = chrono::system_clock::now(); 
 
-	return out.str();
+		// Get the time_t from today
+		rawtime = chrono::system_clock::to_time_t(today); 
+		// Convert to time_point fromtd_tm, wich include till seconds.
+		chrono::system_clock::time_point td_tm = chrono::system_clock::from_time_t(rawtime);
+
+		// Get the diferece tiks betwen them.
+		chrono::system_clock::time_point units(today - td_tm);
+
+		//Getting Milliseconds
+		auto mseconds = chrono::duration_cast<chrono::milliseconds>(units.time_since_epoch()).count(); 
+
+		out << std::setw(3) << std::setfill('0') << mseconds;
+	}
+
+    return out.str();
 }
 
 
 void LogGate::writeLog(string level, string message)
 {
-	mutex_log.lock();
+	unique_lock<mutex> wlLck(mutex_log);
 
 	char line[2048];
 	stringstream buff;
@@ -174,6 +220,4 @@ void LogGate::writeLog(string level, string message)
 	} while (strcmp(line, "") != 0);
 
 	LogManager::getLogManger()->writeToLog(out.str());
-
-	mutex_log.unlock();
 }
