@@ -10,6 +10,7 @@ LIB_SRC		= ./apilog
 SMP_SRC		= ./sample
 OBJ_DIR		= ./obj
 BIN_DIR		= ./bin
+DEBUG_DIR	= ./debug
 LIB_DIR		= ./lib
 LOG_DIR		= ./logs
 INC_DIR		= ./include
@@ -63,6 +64,17 @@ uninstall: /usr/lib/$(TARGET_LIB)
 	@echo Uninstalling /usr/lib/$(TARGET_LIB)
 	rm -f /usr/lib/$(TARGET_LIB)
 	@ldconfig
+
+installdbg: $(DEBUG_DIR)/$(TARGET_LIB)
+	@echo ***************************************
+	@echo Installing /usr/lib/$(TARGET_LIB)
+	
+	cp -f $(DEBUG_DIR)/$(TARGET_LIB) /usr/lib
+	chmod 0755 /usr/lib/$(TARGET_LIB)
+	ldconfig
+	@echo checking instalation
+	ldconfig -p | grep $(TARGET_LIB)
+
 
 
 $(OBJ_DIR):

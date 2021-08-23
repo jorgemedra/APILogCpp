@@ -1,0 +1,60 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: Build APILogCPP for Debug",
+			"command": "g++",
+			"args": [
+				"-g",
+				"-fPIC",
+				"-std=c++17",
+				"-shared",
+				"-lpthread",
+				"-lstdc++",
+				"${workspaceFolder}/APILogCpp/apilog/LogManager.cpp",
+				"${workspaceFolder}/APILogCpp/apilog/LogGate.cpp",
+				"-o",
+				"${workspaceFolder}/APILogCpp/debug/libAPILogCpp.so"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: g++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: Build Sample for Debug",
+			"command": "g++",
+			"args": [
+				"-g",
+				"-fPIC",
+				"-std=c++17",
+				"-Wall",
+				"-MD",
+				"-I${workspaceFolder}/APILogCpp/include",
+				"${workspaceFolder}/APILogCpp/sample/LogTest.cpp",
+				"-o",
+				"${workspaceFolder}/APILogCpp/debug/sample",
+				"-lstdc++",
+				"-L${workspaceFolder}/APILogCpp/debug",
+				"-lpthread",
+				"-lAPILogCpp"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: g++",
+			"dependsOn":"C/C++: Build APILogCPP for Debug"
+
+		}
+	]
+}
