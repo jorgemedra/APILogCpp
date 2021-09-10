@@ -213,30 +213,33 @@ int main()
 ## Output sample
 
 ```s
-API LOG CPP V2.0 (27 Abril 2021)
-	Author: Jorge Oma Medra Torres
-	https://github.com/jorgemedra
+UIPI LOG V1.3 (Jan 12th 2018)
 LOG FILE WITH INDEX :[1]
 --------------------------------------
 API LOG Test App.
 This is a App header.
+
 --------------------------------------
-2021-04-28 16:19:40.654	DBG_1	MAIN_OBJ	Este es un mensaje de DEBUG Lv1
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	Mensaje de un Buffer Cualqueira.
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	Buffer: Size = 43
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	HEX (Bytes  1-10) [10 11 12 13 14 15 16 17 18 19] (..........)
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	HEX (Bytes 11-20) [40 41 42 43 44 45 46 47 48 49] (@ABCDEFGHI)
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	HEX (Bytes 21-30) [50 51 52 53 54 55 56 57 58 59] (PQRSTUVWXY)
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	HEX (Bytes 31-40) [60 61 62 63 64 65 66 67 68 69] (`abcdefghi)
-2021-04-28 16:19:40.654	DBG_2	MAIN_OBJ	HEX (Bytes 41-43) [70 71 72                     ] (pqr       )
-2021-04-28 16:19:40.654	 INFO	SECN_OBJ	Este es un mensaje de INFO (Si aparece)
-2021-04-28 16:19:40.654	DBG_1	SECN_OBJ	Este es un mensaje de DEBUG Lv1
-2021-04-28 16:19:40.654	 INFO	MAIN_OBJ	--[15710]-----------
-2021-04-28 16:19:40.654	 INFO	MAIN_O
+
+2021-09-10 13:24:04.625	 INFO	MAIN_OBJ	--[10216]-----------
+2021-09-10 13:24:04.625	 INFO	MAIN_OBJ	Este es un mensaje de INFO
+2021-09-10 13:24:04.625	 WARN	MAIN_OBJ	Este es un mensaje de Warning
+2021-09-10 13:24:04.625	ERROR	MAIN_OBJ	Este es un mensaje de ERROR
+2021-09-10 13:24:04.626	DEBUG	MAIN_OBJ	Mensaje de un Buffer Cualqueira.
 
 ...
 
-2021-04-28 16:28:44.353	 WARN	MAIN_OBJ	Este es un mensaje de Warning
-2021-04-28 16:28:44.353	ERROR	MAIN_OBJ	Este es un mensaje de ERROR
-The log will continue in file [./logs/TestLog2.log]...
+2021-09-10 13:24:06.840	 INFO	SECN_OBJ	Este es un mensaje de INFO (Si aparece)
+2021-09-10 13:24:06.840	 INFO	MAIN_OBJ	--[12256]-----------
+2021-09-10 13:24:06.840	 INFO	MAIN_OBJ	Este es un mensaje de INFO
+2021-09-10 13:24:06.840	 WARN	MAIN_OBJ	Este es un mensaje de Warning
+2021-09-10 13:24:06.840	ERROR	MAIN_OBJ	Este es un mensaje de ERROR
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	Mensaje de un Buffer Cualqueira.
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	Buffer: Size = 43
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	HEX (Bytes  1-10)	[10 11 12 13 14 15 16 17 18 19] (..........)
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	HEX (Bytes 11-20)	[40 41 42 43 44 45 46 47 48 49] (@ABCDEFGHI)
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	HEX (Bytes 21-30)	[50 51 52 53 54 55 56 57 58 59] (PQRSTUVWXY)
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	HEX (Bytes 31-40)	[60 61 62 63 64 65 66 67 68 69] (`abcdefghi)
+2021-09-10 13:24:06.840	DEBUG	MAIN_OBJ	HEX (Bytes 41-43)	[70 71 72                     ] (pqr       )
+The log will continue in file [/home/jorge/vsworkspace/APILogCpp/logs/TestLog.3.log]...
 ```

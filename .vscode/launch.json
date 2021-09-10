@@ -5,11 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Debug Sample",
+            "name": "(gdb) Iniciar",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/APILogCpp/debug/sample",
-            "args": [],
+            "program": "${workspaceFolder}/debug/sample",
+            "args": [
+                "/home/jorge/vsworkspace/APILogCpp/logs"
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -17,7 +19,7 @@
             "MIMode": "gdb",
             "setupCommands": [
                 {
-                    "description": "Enable pretty-printing for gdb",
+                    "description": "Habilitar la impresión con sangría para gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }

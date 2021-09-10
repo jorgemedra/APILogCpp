@@ -2,11 +2,11 @@
 
 
 #TARGET		= APILogCpp.lib
-TARGET_LIB	= libAPILogCpp.so
+TARGET_LIB	= libAPILogCpp.a
 TARGET_SMPL	= sample
 
 
-LIB_SRC		= ./apilog
+LIB_SRC		= ./src
 SMP_SRC		= ./sample
 OBJ_DIR		= ./obj
 BIN_DIR		= ./bin
@@ -19,7 +19,7 @@ HRD_LIB		= $(INC_DIR)/APILog.h
 CC			= g++
 CPPFLAGS	= -c -fPIC -std=c++17 -Wall -MD
 LNK_LIBF	= -shared -lpthread -lstdc++
-LNK_SMPF	= -lstdc++ -L$(LIB_DIR) -lpthread -lAPILogCpp
+LNK_SMPF	= -L$(LIB_DIR) -lpthread -lAPILogCpp
 
 
 API_OBJS	= $(OBJ_DIR)/LogGate.o \
@@ -73,7 +73,7 @@ installdbg: $(DEBUG_DIR)/$(TARGET_LIB)
 	chmod 0755 /usr/lib/$(TARGET_LIB)
 	ldconfig
 	@echo checking instalation
-	ldconfig -p | grep $(TARGET_LIB)
+	ldconfig -p | grep "$(TARGET_LIB)"
 
 
 

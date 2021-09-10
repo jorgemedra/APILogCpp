@@ -13,29 +13,38 @@
 #include <exception> 
 #include <thread>
 #include <chrono>
+#include <sys/time.h>
 
 #include <APILogCpp.h>
 
 using namespace std;
 using namespace apilog;
 
-int main()
+int main(int argc, char* args[])
 {
 	
+	if(argc != 2) 
+	{
+		cout << "Missing log pathn: $./sample <logpath>\n";
+		return 0;
+	}
+
+	string logPath = args[1];
+
 	stringstream header;
 
-	header << "--------------------------------------" << endl
-		   << "API LOG Test App." << endl
-		   << "This is a App header." << endl
-		   << "--------------------------------------";
+	header << "--------------------------------------\n"
+		   << "API LOG Test App.\n"
+		   << "This is a App header.\n"
+		   << "\n--------------------------------------" << endl;
 		   
-	LogManager::getLogManger()->initLog("TestLog", "./logs", 10, 1, "%Y-%m-%d %H:%M:%S.@s", header.str());
+	LogManager::getLogManger()->initLog("TestLog", logPath, 10, 1, "%Y-%m-%d %H:%M:%S.@s", header.str());
 
-
-	cout << "Generating logs in dir: .logs/\n";
+	cout << "Generating logs in dir: [" << logPath << "]\n";
 
 	LogGate log("MAIN_OBJ");
-	log.setLogLevel(LOG_LEVEL::INFO | LOG_LEVEL::ERROR | LOG_LEVEL::WARNING | LOG_LEVEL::DEBUG_ON | LOG_LEVEL::DEBUG_LVL_2);
+	//log.setLogLevel(LOG_LEVEL::INFO | LOG_LEVEL::ERROR | LOG_LEVEL::WARNING | LOG_LEVEL::DEBUG_ON | LOG_LEVEL::DEBUG_LVL_2);
+	log.setLogLevel(LOG_LEVEL::INFO | LOG_LEVEL::ERROR | LOG_LEVEL::WARNING | LOG_LEVEL::DEBUG_LVL_2);
 
 	LogGate logSec("SECN_OBJ");
 	
