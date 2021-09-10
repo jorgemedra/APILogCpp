@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 
 #ifndef UIPI_LOG_VERSION
-#define UIPI_LOG_VERSION "UIPI LOG V1.3 (Jan 12th 2018)"
+#define UIPI_LOG_VERSION "UIPI LOG V2.1 (Sept 10th 2021)"
 #endif
 
 using namespace std;
